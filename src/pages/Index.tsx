@@ -7,6 +7,7 @@ import BottomNavigation from "@/components/BottomNavigation";
 import ServiceCard from "@/components/ServiceCard";
 import { Search } from "lucide-react";
 import { useState } from "react";
+import CategoryCarousel from "@/components/CategoryCarousel";
 
 const Index = () => {
   const { user, login } = useUser();
@@ -89,7 +90,7 @@ const Index = () => {
       {user.role === 'user' ? (
         <UserDashboard categories={categories} services={services} />
       ) : (
-        <ProviderDashboard />
+        <ProviderDashboard services={services} />
       )}
       
       <BottomNavigation />
@@ -102,27 +103,7 @@ const UserDashboard = ({ categories, services }) => {
     <div className="p-4">
       <div className="mb-6">
         <h2 className="text-lg font-semibold mb-3">Kategori Layanan</h2>
-        <div className="grid grid-cols-3 gap-3">
-          {categories.slice(0, 6).map((category) => (
-            <Link
-              key={category.id}
-              to={`/category/${category.id}`}
-              className="category-card"
-            >
-              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2 text-primary">
-                {category.icon && (
-                  <span className="text-xl">{category.icon === 'house' ? '🏠' : 
-                    category.icon === 'settings' ? '🔧' : 
-                    category.icon === 'heart' ? '💆‍♀️' :
-                    category.icon === 'car' ? '🚗' :
-                    category.icon === 'briefcase' ? '📚' :
-                    category.icon === 'calendar' ? '🎉' : '⭐'}</span>
-                )}
-              </div>
-              <span className="text-xs text-center line-clamp-2">{category.name}</span>
-            </Link>
-          ))}
-        </div>
+        <CategoryCarousel categories={categories} />
       </div>
       
       <div className="mb-6">
@@ -151,8 +132,11 @@ const UserDashboard = ({ categories, services }) => {
   );
 };
 
-const ProviderDashboard = () => {
+const ProviderDashboard = ({ services }) => {
   const { user } = useUser();
+  const allServices = services || [];
+  // Filter out provider's own services
+  const otherServices = allServices.filter(service => service.provider.id !== 'provider-1');
   
   return (
     <div className="p-4">
@@ -192,6 +176,28 @@ const ProviderDashboard = () => {
             <p className="text-sm text-gray-500">Total Pesanan</p>
             <p className="text-xl font-semibold">0</p>
           </div>
+        </div>
+      </div>
+      
+      <div className="mb-6">
+        <div className="flex justify-between items-center mb-3">
+          <h2 className="text-lg font-semibold">Layanan Lainnya</h2>
+          <Link to="/search" className="text-sm text-primary">
+            Lihat Semua
+          </Link>
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          {otherServices.slice(0, 4).map((service) => (
+            <div key={service.id} className="relative">
+              <ServiceCard service={service} />
+              <Button 
+                className="absolute top-2 right-2 bg-primary text-white text-xs py-1 px-2 h-auto"
+                onClick={() => { /* Add switch role functionality here */ }}
+              >
+                Pesan
+              </Button>
+            </div>
+          ))}
         </div>
       </div>
       

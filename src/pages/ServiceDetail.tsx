@@ -4,12 +4,12 @@ import { useData } from '@/contexts/DataContext';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Star, Clock, MapPin, MessageSquare, ShoppingCart } from 'lucide-react';
 import BottomNavigation from '@/components/BottomNavigation';
-import ServiceContactCard from '@/components/ServiceContactCard';
 import { useUser } from '@/contexts/UserContext';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
+import { supabase } from '@/integrations/supabase/client';
 
 const ServiceDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -18,9 +18,11 @@ const ServiceDetail = () => {
   const navigate = useNavigate();
   
   const [showOrderForm, setShowOrderForm] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
   const [orderNotes, setOrderNotes] = useState('');
   const [orderDate, setOrderDate] = useState('');
   const [cartCount, setCartCount] = useState(0);
+  const [providerContactInfo, setProviderContactInfo] = useState<string | null>(null);
   
   const service = getServiceById(id || '');
   
@@ -54,10 +56,33 @@ const ServiceDetail = () => {
   
   const handleOrderSubmit = () => {
     createOrder(service.id, orderNotes, orderDate);
-    toast.success('Pesanan berhasil dibuat');
     setShowOrderForm(false);
+    setShowConfirmation(true);
+  };
+
+  const handleConfirmOrder = () => {
+    // In a real app, deduct fees from both sides
+    // For provider: 5% of the service price
+    // For user: 3% of the service price
+    
+    // Show provider's contact info
+    setProviderContactInfo(service.provider.phone);
+    
+    // Show success message
+    toast.success('Terima kasih telah memesan layanan di KlikJasa');
+    
+    // Reset state
+    setShowConfirmation(false);
     setOrderNotes('');
     setOrderDate('');
+  };
+
+  const handleSwitchToUser = () => {
+    if (user) {
+      // In a real implementation, this would update the user role in the database
+      toast.success('Beralih ke akun Pengguna Jasa');
+      navigate('/');
+    }
   };
 
   return (
@@ -128,7 +153,7 @@ const ServiceDetail = () => {
           </div>
           
           <div className="text-lg font-semibold text-primary">
-            {formatCurrency(service.price)}
+            {service.price ? `Mulai dari ${formatCurrency(service.price)}` : "Harga bervariasi"}
           </div>
         </div>
         
@@ -189,39 +214,105 @@ const ServiceDetail = () => {
                       onClick={handleOrderSubmit}
                       className="flex-1 bg-primary"
                     >
-                      Kirim Pesanan
+                      Lanjutkan
                     </Button>
                   </div>
                 </div>
               </div>
-            ) : (
-              <div className="flex space-x-3 mb-6">
-                <Button
-                  onClick={() => setShowOrderForm(true)}
-                  className="flex-1 bg-primary"
-                >
-                  Pesan Layanan
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={handleAddToCart}
-                  className="flex-1"
-                >
-                  Tambah ke Keranjang
-                </Button>
+            ) : showConfirmation ? (
+              <div className="bg-white p-4 rounded-lg border border-gray-200 mb-6">
+                <h3 className="text-lg font-semibold mb-2">Konfirmasi Pesanan</h3>
+                <p className="text-gray-600 mb-4">
+                  Dengan mengkonfirmasi pesanan ini, Anda menyetujui untuk membayar biaya platform sebesar 3% dari harga minimal layanan.
+                </p>
+                
+                <div className="bg-gray-50 p-3 rounded-md mb-4">
+                  <div className="flex justify-between mb-2">
+                    <span className="text-gray-500">Harga layanan:</span>
+                    <span>{formatCurrency(service.price)}</span>
+                  </div>
+                  <div className="flex justify-between mb-2">
+                    <span className="text-gray-500">Biaya platform (3%):</span>
+                    <span>{formatCurrency((service.price || 0) * 0.03)}</span>
+                  </div>
+                  <div className="flex justify-between font-medium pt-2 border-t">
+                    <span>Total:</span>
+                    <span>{formatCurrency((service.price || 0) * 1.03)}</span>
+                  </div>
+                </div>
+                
+                <div className="flex space-x-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowConfirmation(false)}
+                    className="flex-1"
+                  >
+                    Batal
+                  </Button>
+                  <Button
+                    onClick={handleConfirmOrder}
+                    className="flex-1 bg-primary"
+                  >
+                    Konfirmasi Pesanan
+                  </Button>
+                </div>
               </div>
+            ) : (
+              <>
+                {providerContactInfo ? (
+                  <div className="bg-green-50 p-4 rounded-lg border border-green-200 mb-6">
+                    <h3 className="font-semibold text-green-800 mb-2">Pesanan Berhasil!</h3>
+                    <p className="text-green-700 mb-3">
+                      Anda dapat menghubungi penyedia jasa melalui:
+                    </p>
+                    <div className="bg-white p-3 rounded border border-green-100">
+                      <p className="font-medium">WhatsApp: {providerContactInfo}</p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex space-x-3 mb-6">
+                    <Button
+                      onClick={() => setShowOrderForm(true)}
+                      className="flex-1 bg-primary"
+                    >
+                      Pesan Layanan
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={handleAddToCart}
+                      className="flex-1"
+                    >
+                      <ShoppingCart size={18} className="mr-2" />
+                      Tambah ke Keranjang
+                    </Button>
+                  </div>
+                )}
+                
+                <Button
+                  variant="ghost"
+                  className="w-full flex items-center justify-center mb-6"
+                  onClick={() => window.location.href = `https://wa.me/${service.provider.phone.replace(/\+/g, '')}`}
+                >
+                  <MessageSquare size={18} className="mr-2 text-green-500" />
+                  <span>Chat dengan Penyedia</span>
+                </Button>
+              </>
             )}
-            
-            <ServiceContactCard service={service} />
           </>
         )}
         
         {user && user.role === 'provider' && (
           <div className="bg-gray-50 p-4 rounded-lg">
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-500 mb-4">
               Anda saat ini masuk sebagai Penyedia Jasa. 
-              Alih ke Pengguna Jasa untuk menghubungi Penyedia Jasa ini.
+              Beralih ke Pengguna Jasa untuk memesan layanan ini.
             </p>
+            <Button
+              className="w-full bg-primary"
+              onClick={handleSwitchToUser}
+            >
+              Beralih ke Pengguna Jasa
+            </Button>
           </div>
         )}
       </div>

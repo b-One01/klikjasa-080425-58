@@ -6,12 +6,15 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { UserProvider } from "@/contexts/UserContext";
 import { DataProvider } from "@/contexts/DataContext";
+import { AuthProvider } from "@/hooks/useAuth";
 
 // Pages
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Profile from "./pages/Profile";
+import EditProfile from "./pages/EditProfile";
+import Settings from "./pages/Settings";
 import Search from "./pages/Search";
 import ServiceDetail from "./pages/ServiceDetail";
 import MyServices from "./pages/MyServices";
@@ -25,27 +28,31 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <UserProvider>
-        <DataProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/search" element={<Search />} />
-              <Route path="/service/:id" element={<ServiceDetail />} />
-              <Route path="/my-services" element={<MyServices />} />
-              <Route path="/add-service" element={<AddService />} />
-              <Route path="/edit-service/:id" element={<EditService />} />
-              <Route path="/orders" element={<Orders />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </DataProvider>
-      </UserProvider>
+      <BrowserRouter>
+        <AuthProvider>
+          <UserProvider>
+            <DataProvider>
+              <Toaster />
+              <Sonner />
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/edit-profile" element={<EditProfile />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/search" element={<Search />} />
+                <Route path="/service/:id" element={<ServiceDetail />} />
+                <Route path="/my-services" element={<MyServices />} />
+                <Route path="/add-service" element={<AddService />} />
+                <Route path="/edit-service/:id" element={<EditService />} />
+                <Route path="/orders" element={<Orders />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </DataProvider>
+          </UserProvider>
+        </AuthProvider>
+      </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
 );

@@ -48,7 +48,9 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
         
         <div className="flex justify-between items-center">
           <div className="text-sm text-gray-500">{service.location}</div>
-          <div className="font-medium text-primary">{formatCurrency(service.price)}</div>
+          <div className="font-medium text-primary">
+            {service.price ? `Mulai dari ${formatCurrency(service.price)}` : "Harga bervariasi"}
+          </div>
         </div>
       </div>
     </Link>
