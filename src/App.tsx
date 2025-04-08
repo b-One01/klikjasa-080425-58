@@ -15,6 +15,7 @@ import Register from "./pages/Register";
 import Profile from "./pages/Profile";
 import EditProfile from "./pages/EditProfile";
 import Settings from "./pages/Settings";
+import Privacy from "./pages/Privacy";
 import Search from "./pages/Search";
 import ServiceDetail from "./pages/ServiceDetail";
 import MyServices from "./pages/MyServices";
@@ -41,6 +42,7 @@ const App = () => (
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/edit-profile" element={<EditProfile />} />
                 <Route path="/settings" element={<Settings />} />
+                <Route path="/privacy" element={<Privacy />} />
                 <Route path="/search" element={<Search />} />
                 <Route path="/service/:id" element={<ServiceDetail />} />
                 <Route path="/my-services" element={<MyServices />} />

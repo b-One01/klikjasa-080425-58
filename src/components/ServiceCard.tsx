@@ -20,7 +20,7 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
 
   return (
     <Link to={`/service/${service.id}`} className="service-card">
-      <div className="h-40 bg-gray-200 w-full">
+      <div className="h-40 bg-gray-200 w-full rounded-t-md overflow-hidden">
         {service.images && service.images.length > 0 ? (
           <img 
             src={service.images[0]} 
@@ -33,7 +33,7 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
           </div>
         )}
       </div>
-      <div className="p-3">
+      <div className="p-3 border border-t-0 border-gray-200 rounded-b-md">
         <h3 className="font-medium text-base line-clamp-1">{service.title}</h3>
         <p className="text-sm text-gray-500 mb-1 line-clamp-1">
           {service.provider.businessName || service.provider.name}

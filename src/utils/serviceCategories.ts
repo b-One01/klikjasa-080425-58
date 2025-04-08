@@ -19,32 +19,14 @@ export const serviceCategories: ServiceCategory[] = [
     name: 'Kebersihan',
     icon: 'trash',
     subCategories: createSubcategories('cat-1', [
-      'Kebersihan Rumah', 
-      'Pembersihan Rutin', 
-      'Pembersihan Mendalam (Deep Cleaning)', 
-      'Pembersihan Setelah Renovasi',
-      'Pembersihan Pindahan Rumah',
-      'Pembersihan Apartemen',
-      'Pembersihan Kos',
-      'Pembersihan Kamar Mandi',
-      'Pembersihan Dapur',
-      'Pembersihan Jendela',
-      'Kebersihan Kantor',
-      'Pembersihan Rutin Kantor',
-      'Pembersihan Total Kantor',
-      'Cuci Mobil Biasa',
-      'Cuci Mobil Detailing',
-      'Cuci Motor Biasa',
-      'Cuci Motor Detailing',
-      'Laundry Kiloan',
-      'Laundry Satuan',
-      'Dry Cleaning',
-      'Setrika Saja',
-      'Pembasmi Kecoa',
-      'Pembasmi Tikus',
-      'Pembasmi Nyamuk',
-      'Pembasmi Rayap',
-      'Pembasmi Semut'
+      'Pembersihan Rumah', 
+      'Pembersihan Kantor',
+      'Cuci Mobil',
+      'Laundry & Dry Cleaning',
+      'Pembersihan AC',
+      'Desinfeksi & Sanitasi',
+      'Jasa Pembantu Rumah Tangga (PRT)',
+      'Tukang Kebun'
     ])
   },
   {
@@ -52,29 +34,14 @@ export const serviceCategories: ServiceCategory[] = [
     name: 'Perbaikan Rumah',
     icon: 'wrench',
     subCategories: createSubcategories('cat-2', [
-      'Instalasi Listrik Baru',
-      'Perbaikan Instalasi Listrik',
-      'Pemasangan Lampu',
-      'Pemasangan Stop Kontak',
-      'Perbaikan Korsleting',
-      'Perbaikan Keran Bocor',
-      'Perbaikan Pipa Bocor',
-      'Pemasangan Sanitary (WC, Wastafel)',
-      'Perbaikan Saluran Mampet',
-      'Perbaikan Furniture Rusak',
-      'Perakitan Furniture Baru',
-      'Pembuatan Furniture Custom',
-      'Perbaikan Pagar Besi',
-      'Pembuatan Pagar Besi',
-      'Perbaikan Teralis',
-      'Pengecatan Interior',
-      'Pengecatan Eksterior',
-      'Cuci AC',
-      'Isi Freon AC',
-      'Perbaikan AC Rusak',
-      'Pemasangan AC Baru',
-      'Perbaikan Genteng Pecah',
-      'Perbaikan Saluran Air Hujan'
+      'Tukang Listrik',
+      'Tukang Ledeng',
+      'Tukang Kayu',
+      'Tukang Las',
+      'Tukang Cat',
+      'Perbaikan Atap',
+      'Perbaikan Pintu & Jendela',
+      'Instalasi Peralatan Rumah Tangga'
     ])
   },
   {
@@ -82,25 +49,14 @@ export const serviceCategories: ServiceCategory[] = [
     name: 'Kecantikan & Kesehatan',
     icon: 'scissors',
     subCategories: createSubcategories('cat-3', [
-      'Potong Rambut Pria',
-      'Potong Rambut Wanita',
-      'Creambath',
-      'Masker Rambut',
-      'Rambut Coloring',
-      'Smoothing/Rebonding',
-      'Facial',
-      'Totok Wajah',
-      'Makeup Harian',
-      'Makeup Pesta',
-      'Makeup Wisuda',
-      'Tradisional Pijat',
-      'Pijat Refleksi',
-      'Lulur',
-      'Manicure & Pedicure',
-      'Perawat Lansia',
-      'Terapi Fisik',
-      'Konsultasi Dokter Umum (Telemedicine)',
-      'Konsultasi Dokter Spesialis (Telemedicine)'
+      'Potong Rambut & Styling',
+      'Perawatan Wajah',
+      'Pijat & Spa',
+      'Make Up Artist (MUA)',
+      'Nail Art',
+      'Personal Trainer',
+      'Yoga & Pilates',
+      'Konsultasi Gizi'
     ])
   },
   {
@@ -110,10 +66,10 @@ export const serviceCategories: ServiceCategory[] = [
     subCategories: createSubcategories('cat-4', [
       'Ojek Online',
       'Taksi Online',
-      'Sewa Mobil dengan Sopir',
-      'Sewa Mobil tanpa Sopir',
-      'Jasa Pindahan Rumah/Kantor',
-      'Pengiriman Barang (Kurir Lokal)'
+      'Sewa Mobil',
+      'Jasa Pindahan',
+      'Kurir & Pengiriman',
+      'Sopir Pribadi'
     ])
   },
   {
@@ -121,16 +77,14 @@ export const serviceCategories: ServiceCategory[] = [
     name: 'Pendidikan & Pelatihan',
     icon: 'book-open',
     subCategories: createSubcategories('cat-5', [
-      'Guru Privat Matematika',
-      'Guru Privat Bahasa Inggris',
-      'Guru Privat IPA',
-      'Les Musik Gitar',
-      'Les Musik Piano',
-      'Les Musik Vokal',
+      'Tutor Privat (Matematika)',
+      'Tutor Privat (Fisika)',
+      'Tutor Privat (Kimia)',
+      'Tutor Privat (Bahasa Inggris)',
+      'Kursus Musik',
+      'Kursus Bahasa',
       'Pelatihan Komputer',
-      'Pelatihan Bahasa Asing',
-      'Pelatihan Memasak',
-      'Tutor untuk Anak Berkebutuhan Khusus'
+      'Pelatihan Keterampilan'
     ])
   },
   {
@@ -138,14 +92,12 @@ export const serviceCategories: ServiceCategory[] = [
     name: 'Acara',
     icon: 'calendar',
     subCategories: createSubcategories('cat-6', [
+      'Fotografer & Videografer Acara',
       'Catering',
       'Dekorasi Acara',
-      'Fotografer Acara',
-      'Videografer Acara',
-      'Hiburan Musik',
-      'MC',
-      'Wedding Planner',
-      'Event Organizer'
+      'Hiburan (Musik, MC)',
+      'Perencanaan Acara',
+      'Sewa Peralatan Acara'
     ])
   },
   {
@@ -153,10 +105,11 @@ export const serviceCategories: ServiceCategory[] = [
     name: 'Perawatan Hewan',
     icon: 'cat',
     subCategories: createSubcategories('cat-7', [
-      'Grooming Hewan',
-      'Penitipan Hewan',
-      'Pelatihan Hewan',
-      'Dokter Hewan (Konsultasi Online)'
+      'Grooming Hewan Peliharaan',
+      'Penitipan Hewan Peliharaan',
+      'Pelatihan Hewan Peliharaan',
+      'Dokter Hewan (Konsultasi)',
+      'Jasa Jalan-jalan Hewan Peliharaan'
     ])
   },
   {
@@ -164,12 +117,12 @@ export const serviceCategories: ServiceCategory[] = [
     name: 'Bantuan Pribadi',
     icon: 'helping-hand',
     subCategories: createSubcategories('cat-8', [
-      'Asisten Rumah Tangga (ART) Harian',
-      'Asisten Rumah Tangga (ART) Mingguan',
-      'Asisten Rumah Tangga (ART) Bulanan',
-      'Jasa Setrika Pakaian',
+      'Asisten Virtual',
+      'Jasa Penulis & Penerjemah',
+      'Jasa Kurir Pribadi',
       'Jasa Belanja Pribadi',
-      'Jasa Antar Jemput Anak Sekolah'
+      'Pengasuh Anak (Baby Sitter)',
+      'Perawatan Lansia'
     ])
   },
   {
@@ -177,13 +130,12 @@ export const serviceCategories: ServiceCategory[] = [
     name: 'Desain & Kreatif',
     icon: 'palette',
     subCategories: createSubcategories('cat-9', [
-      'Desain Logo',
-      'Desain Poster',
-      'Desain Banner',
-      'Desain Website',
+      'Desain Grafis',
+      'Desain Web',
       'Desain Interior',
-      'Produk Fotografi',
-      'Videografi Produk'
+      'Fotografi Produk',
+      'Videografi',
+      'Ilustrasi'
     ])
   },
   {
@@ -192,10 +144,10 @@ export const serviceCategories: ServiceCategory[] = [
     icon: 'smartphone',
     subCategories: createSubcategories('cat-10', [
       'Perbaikan Handphone',
-      'Perbaikan Laptop',
-      'Perbaikan Televisi',
-      'Perbaikan Kulkas',
-      'Perbaikan Mesin Cuci'
+      'Perbaikan Laptop & Komputer',
+      'Perbaikan TV',
+      'Perbaikan Kulkas & Mesin Cuci',
+      'Perbaikan AC'
     ])
   },
   {
@@ -203,11 +155,11 @@ export const serviceCategories: ServiceCategory[] = [
     name: 'Otomotif',
     icon: 'car',
     subCategories: createSubcategories('cat-11', [
-      'Servis Mobil',
-      'Servis Motor',
-      'Ganti Ban',
-      'Tune Up',
-      'Body Repair'
+      'Perbaikan Mobil',
+      'Perbaikan Motor',
+      'Cuci Mobil & Motor (Panggilan)',
+      'Derek Mobil',
+      'Layanan Darurat Kendaraan'
     ])
   },
   {
@@ -215,10 +167,11 @@ export const serviceCategories: ServiceCategory[] = [
     name: 'Lain-lain',
     icon: 'more-horizontal',
     subCategories: createSubcategories('cat-12', [
-      'Jasa Pijat Panggilan',
+      'Jasa Pengecatan',
+      'Jasa Instalasi',
       'Jasa Jahit',
-      'Jasa Penerjemah',
-      'Jasa Notaris (Konsultasi Online)'
+      'Jasa Pijat Refleksi',
+      'Lainnya'
     ])
   }
 ];

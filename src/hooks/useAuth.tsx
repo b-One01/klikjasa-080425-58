@@ -107,7 +107,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         if (authError) throw authError;
       }
 
-      // Update profile data
+      // Update profile data in profiles table
       const { error: profileError } = await supabase
         .from('profiles')
         .update({
