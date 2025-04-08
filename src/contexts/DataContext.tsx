@@ -1,5 +1,5 @@
-
 import React, { createContext, useState, useContext, ReactNode } from 'react';
+import { ServiceFormData } from '@/types/service';
 
 // Types
 export interface ServiceCategory {
@@ -39,13 +39,33 @@ export interface Service {
   provider: ServiceProvider;
 }
 
+export interface Order {
+  id: string;
+  serviceId: string;
+  userId: string;
+  providerId: string;
+  status: 'pending' | 'accepted' | 'rejected' | 'completed';
+  createdAt: string;
+  scheduledDate?: string;
+  notes?: string;
+  service: Service;
+}
+
 interface DataContextType {
   categories: ServiceCategory[];
   services: Service[];
   filteredServices: Service[];
+  orders: Order[];
   searchServices: (query: string, categoryId?: string, subCategoryId?: string) => void;
   getServiceById: (id: string) => Service | undefined;
   getCategoryById: (id: string) => ServiceCategory | undefined;
+  addService: (serviceData: ServiceFormData) => void;
+  updateService: (id: string, serviceData: Partial<ServiceFormData>) => void;
+  deleteService: (id: string) => void;
+  createOrder: (serviceId: string, notes?: string, scheduledDate?: string) => void;
+  getOrdersByUserId: (userId: string) => Order[];
+  getOrdersByProviderId: (providerId: string) => Order[];
+  updateOrderStatus: (orderId: string, status: 'accepted' | 'rejected' | 'completed') => void;
 }
 
 // Sample data
@@ -190,19 +210,30 @@ const sampleServices: Service[] = [
   }
 ];
 
+const sampleOrders: Order[] = [];
+
 const DataContext = createContext<DataContextType>({
   categories: [],
   services: [],
   filteredServices: [],
+  orders: [],
   searchServices: () => {},
   getServiceById: () => undefined,
   getCategoryById: () => undefined,
+  addService: () => {},
+  updateService: () => {},
+  deleteService: () => {},
+  createOrder: () => {},
+  getOrdersByUserId: () => [],
+  getOrdersByProviderId: () => [],
+  updateOrderStatus: () => {},
 });
 
 export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [categories] = useState<ServiceCategory[]>(sampleCategories);
-  const [services] = useState<Service[]>(sampleServices);
+  const [services, setServices] = useState<Service[]>(sampleServices);
   const [filteredServices, setFilteredServices] = useState<Service[]>(sampleServices);
+  const [orders, setOrders] = useState<Order[]>(sampleOrders);
 
   const searchServices = (
     query: string = '',
@@ -240,15 +271,117 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const getCategoryById = (id: string) => {
     return categories.find(category => category.id === id);
   };
+  
+  const addService = (serviceData: ServiceFormData) => {
+    const newService: Service = {
+      id: `service-${services.length + 1}`,
+      title: serviceData.title,
+      description: serviceData.description,
+      categoryId: serviceData.categoryId,
+      subCategoryId: serviceData.subCategoryId,
+      providerId: 'provider-1',
+      price: serviceData.price,
+      location: serviceData.location,
+      images: serviceData.images 
+        ? Array.from(serviceData.images).map(file => URL.createObjectURL(file))
+        : undefined,
+      provider: sampleProviders[0]
+    };
+    
+    setServices(prev => [...prev, newService]);
+    setFilteredServices(prev => [...prev, newService]);
+  };
+  
+  const updateService = (id: string, serviceData: Partial<ServiceFormData>) => {
+    setServices(prev => 
+      prev.map(service => 
+        service.id === id
+          ? {
+              ...service,
+              ...serviceData,
+              images: serviceData.images 
+                ? Array.from(serviceData.images).map(file => URL.createObjectURL(file))
+                : service.images
+            }
+          : service
+      )
+    );
+    
+    if (filteredServices.some(s => s.id === id)) {
+      setFilteredServices(prev => 
+        prev.map(service => 
+          service.id === id
+            ? {
+                ...service,
+                ...serviceData,
+                images: serviceData.images 
+                  ? Array.from(serviceData.images).map(file => URL.createObjectURL(file))
+                  : service.images
+              }
+            : service
+        )
+      );
+    }
+  };
+  
+  const deleteService = (id: string) => {
+    setServices(prev => prev.filter(service => service.id !== id));
+    setFilteredServices(prev => prev.filter(service => service.id !== id));
+  };
+  
+  const createOrder = (serviceId: string, notes?: string, scheduledDate?: string) => {
+    const service = getServiceById(serviceId);
+    if (!service) return;
+    
+    const newOrder: Order = {
+      id: `order-${orders.length + 1}`,
+      serviceId,
+      userId: 'user-1',
+      providerId: service.providerId,
+      status: 'pending',
+      createdAt: new Date().toISOString(),
+      notes,
+      scheduledDate,
+      service
+    };
+    
+    setOrders(prev => [...prev, newOrder]);
+  };
+  
+  const getOrdersByUserId = (userId: string) => {
+    return orders.filter(order => order.userId === userId);
+  };
+  
+  const getOrdersByProviderId = (providerId: string) => {
+    return orders.filter(order => order.providerId === providerId);
+  };
+  
+  const updateOrderStatus = (orderId: string, status: 'accepted' | 'rejected' | 'completed') => {
+    setOrders(prev => 
+      prev.map(order => 
+        order.id === orderId
+          ? { ...order, status }
+          : order
+      )
+    );
+  };
 
   return (
     <DataContext.Provider value={{ 
       categories, 
       services, 
       filteredServices, 
+      orders,
       searchServices, 
       getServiceById,
-      getCategoryById 
+      getCategoryById,
+      addService,
+      updateService,
+      deleteService,
+      createOrder,
+      getOrdersByUserId,
+      getOrdersByProviderId,
+      updateOrderStatus
     }}>
       {children}
     </DataContext.Provider>

@@ -12,7 +12,7 @@ import { toast } from 'sonner';
 const MyServices = () => {
   const navigate = useNavigate();
   const { user } = useUser();
-  const { services } = useData();
+  const { services, deleteService } = useData();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [serviceToDelete, setServiceToDelete] = useState<string | null>(null);
   
@@ -29,10 +29,17 @@ const MyServices = () => {
     setIsDeleteModalOpen(true);
   };
   
+  const handleEditClick = (serviceId: string) => {
+    navigate(`/edit-service/${serviceId}`);
+  };
+  
   const handleConfirmDelete = () => {
-    // In a real app, this would make an API call to delete the service
-    toast.success("Layanan berhasil dihapus");
-    setIsDeleteModalOpen(false);
+    if (serviceToDelete) {
+      deleteService(serviceToDelete);
+      toast.success("Layanan berhasil dihapus");
+      setIsDeleteModalOpen(false);
+      setServiceToDelete(null);
+    }
   };
 
   return (
@@ -97,7 +104,12 @@ const MyServices = () => {
                       </span>
                       
                       <div className="flex space-x-2">
-                        <Button variant="outline" size="sm" className="h-8 px-2">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="h-8 px-2"
+                          onClick={() => handleEditClick(service.id)}
+                        >
                           <Edit size={16} />
                         </Button>
                         <Button 

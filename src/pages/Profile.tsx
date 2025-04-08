@@ -1,5 +1,4 @@
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useUser } from '@/contexts/UserContext';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
@@ -13,6 +12,17 @@ const Profile = () => {
   const navigate = useNavigate();
   const [isConfirmingSwitch, setIsConfirmingSwitch] = useState(false);
   const [isConfirmingLogout, setIsConfirmingLogout] = useState(false);
+  const [previousRole, setPreviousRole] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (previousRole && previousRole !== user?.role) {
+      navigate('/');
+    }
+    
+    if (user?.role) {
+      setPreviousRole(user.role);
+    }
+  }, [user?.role, previousRole, navigate]);
 
   if (!user) {
     navigate('/login');
@@ -24,6 +34,7 @@ const Profile = () => {
   };
 
   const confirmSwitchRole = () => {
+    setPreviousRole(user.role);
     switchRole();
     setIsConfirmingSwitch(false);
     toast.success(`Beralih ke peran ${user.role === 'user' ? 'Penyedia Jasa' : 'Pengguna Jasa'}`);

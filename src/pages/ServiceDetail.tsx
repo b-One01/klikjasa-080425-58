@@ -2,16 +2,25 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useData } from '@/contexts/DataContext';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Star, Clock, MapPin } from 'lucide-react';
+import { ArrowLeft, Star, Clock, MapPin, MessageSquare, ShoppingCart } from 'lucide-react';
 import BottomNavigation from '@/components/BottomNavigation';
 import ServiceContactCard from '@/components/ServiceContactCard';
 import { useUser } from '@/contexts/UserContext';
+import { useState } from 'react';
+import { toast } from 'sonner';
+import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 
 const ServiceDetail = () => {
   const { id } = useParams<{ id: string }>();
-  const { getServiceById, getCategoryById } = useData();
+  const { getServiceById, getCategoryById, createOrder } = useData();
   const { user } = useUser();
   const navigate = useNavigate();
+  
+  const [showOrderForm, setShowOrderForm] = useState(false);
+  const [orderNotes, setOrderNotes] = useState('');
+  const [orderDate, setOrderDate] = useState('');
+  const [cartCount, setCartCount] = useState(0);
   
   const service = getServiceById(id || '');
   
@@ -37,11 +46,24 @@ const ServiceDetail = () => {
       minimumFractionDigits: 0
     }).format(amount);
   };
+  
+  const handleAddToCart = () => {
+    setCartCount(prev => prev + 1);
+    toast.success('Layanan ditambahkan ke keranjang');
+  };
+  
+  const handleOrderSubmit = () => {
+    createOrder(service.id, orderNotes, orderDate);
+    toast.success('Pesanan berhasil dibuat');
+    setShowOrderForm(false);
+    setOrderNotes('');
+    setOrderDate('');
+  };
 
   return (
     <div className="app-container pb-16">
       <div className="bg-white sticky top-0 z-10 border-b border-gray-100">
-        <div className="p-4">
+        <div className="p-4 flex justify-between items-center">
           <Button
             variant="ghost"
             size="icon"
@@ -50,6 +72,17 @@ const ServiceDetail = () => {
           >
             <ArrowLeft size={20} />
           </Button>
+          
+          {user?.role === 'user' && (
+            <Button variant="ghost" size="icon" className="relative" onClick={() => navigate('/cart')}>
+              <ShoppingCart size={20} />
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                  {cartCount}
+                </span>
+              )}
+            </Button>
+          )}
         </div>
       </div>
       
@@ -118,7 +151,69 @@ const ServiceDetail = () => {
         </div>
         
         {user && user.role === 'user' && (
-          <ServiceContactCard service={service} />
+          <>
+            {showOrderForm ? (
+              <div className="bg-white p-4 rounded-lg border border-gray-200 mb-6">
+                <h3 className="text-lg font-semibold mb-4">Pesan Layanan</h3>
+                
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm text-gray-500 mb-1 block">Tanggal Layanan</label>
+                    <Input 
+                      type="date" 
+                      value={orderDate} 
+                      onChange={(e) => setOrderDate(e.target.value)}
+                      className="w-full"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="text-sm text-gray-500 mb-1 block">Catatan</label>
+                    <Textarea
+                      placeholder="Berikan detail tambahan untuk layanan ini"
+                      value={orderNotes}
+                      onChange={(e) => setOrderNotes(e.target.value)}
+                      className="w-full"
+                    />
+                  </div>
+                  
+                  <div className="flex space-x-2">
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowOrderForm(false)}
+                      className="flex-1"
+                    >
+                      Batal
+                    </Button>
+                    <Button
+                      onClick={handleOrderSubmit}
+                      className="flex-1 bg-primary"
+                    >
+                      Kirim Pesanan
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="flex space-x-3 mb-6">
+                <Button
+                  onClick={() => setShowOrderForm(true)}
+                  className="flex-1 bg-primary"
+                >
+                  Pesan Layanan
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={handleAddToCart}
+                  className="flex-1"
+                >
+                  Tambah ke Keranjang
+                </Button>
+              </div>
+            )}
+            
+            <ServiceContactCard service={service} />
+          </>
         )}
         
         {user && user.role === 'provider' && (

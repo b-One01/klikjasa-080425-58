@@ -17,7 +17,7 @@ export interface ServiceFormData {
   description: string;
   categoryId: string;
   subCategoryId: string;
-  price?: number;
+  price: number | undefined;
   location?: string;
   images?: File[];
 }

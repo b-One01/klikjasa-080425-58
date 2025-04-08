@@ -1,9 +1,10 @@
 
-import { Button } from "@/components/ui/button"; 
+import { Button } from "@/components/ui/button";
 import { Service } from "@/contexts/DataContext";
 import { useUser } from "@/contexts/UserContext";
 import { useState } from "react";
 import { toast } from "sonner";
+import { MessageSquare, Phone, Mail } from "lucide-react";
 
 interface ServiceContactCardProps {
   service: Service;
@@ -60,19 +61,22 @@ const ServiceContactCard = ({ service }: ServiceContactCardProps) => {
           </div>
           <div className="flex space-x-2 mt-4">
             <Button asChild className="flex-1 bg-accent hover:bg-accent/90">
-              <a href={`tel:${service.provider.phone}`}>Telepon</a>
+              <a href={`tel:${service.provider.phone}`}>
+                <Phone size={16} className="mr-2" /> Telepon
+              </a>
             </Button>
             <Button asChild variant="outline" className="flex-1">
-              <a href={`mailto:${service.provider.email}`}>Email</a>
+              <a href={`mailto:${service.provider.email}`}>
+                <Mail size={16} className="mr-2" /> Email
+              </a>
             </Button>
           </div>
+          <Button className="w-full mt-2 bg-primary">
+            <MessageSquare size={16} className="mr-2" /> Chat dengan Penyedia Jasa
+          </Button>
         </div>
       ) : (
         <div className="space-y-4">
-          <p className="text-sm">
-            Untuk melihat informasi kontak penyedia jasa, Anda harus membayar biaya{" "}
-            <span className="font-semibold">{formatCurrency(contactFee)}</span>
-          </p>
           <div className="flex items-center justify-between">
             <p className="text-sm">
               Saldo Anda: <span className="font-semibold">{formatCurrency(user.balance)}</span>
@@ -85,6 +89,12 @@ const ServiceContactCard = ({ service }: ServiceContactCardProps) => {
               {user.balance < contactFee ? "Top Up & Lihat Kontak" : "Lihat Kontak"}
             </Button>
           </div>
+          
+          {user.balance < contactFee && (
+            <p className="text-sm text-red-500">
+              Saldo anda tidak mencukupi. Silakan top-up untuk melihat kontak penyedia jasa.
+            </p>
+          )}
           
           {!user.isLoggedIn && (
             <p className="text-sm text-red-500">

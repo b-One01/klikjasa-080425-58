@@ -57,6 +57,9 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       ...user,
       role: newRole,
     });
+    
+    // Redirect logic is handled in the Profile component
+    // We'll redirect after the state update is complete
   };
 
   const updateBalance = (amount: number) => {

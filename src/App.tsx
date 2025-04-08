@@ -16,6 +16,8 @@ import Search from "./pages/Search";
 import ServiceDetail from "./pages/ServiceDetail";
 import MyServices from "./pages/MyServices";
 import AddService from "./pages/AddService";
+import EditService from "./pages/EditService";
+import Orders from "./pages/Orders";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -37,6 +39,8 @@ const App = () => (
               <Route path="/service/:id" element={<ServiceDetail />} />
               <Route path="/my-services" element={<MyServices />} />
               <Route path="/add-service" element={<AddService />} />
+              <Route path="/edit-service/:id" element={<EditService />} />
+              <Route path="/orders" element={<Orders />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
