@@ -56,11 +56,12 @@ const MyServices = () => {
         
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold">Daftar Layanan</h2>
-          <Button asChild className="bg-accent hover:bg-accent/90">
-            <a href="/add-service">
-              <Plus size={18} className="mr-2" />
-              Tambah
-            </a>
+          <Button 
+            className="bg-accent hover:bg-accent/90"
+            onClick={() => navigate('/add-service')}
+          >
+            <Plus size={18} className="mr-2" />
+            Tambah
           </Button>
         </div>
         
@@ -119,8 +120,11 @@ const MyServices = () => {
             <p className="text-gray-500 mb-4">
               Anda belum memiliki layanan yang ditawarkan
             </p>
-            <Button asChild className="bg-primary">
-              <a href="/add-service">Tambah Layanan Baru</a>
+            <Button
+              className="bg-primary"
+              onClick={() => navigate('/add-service')}
+            >
+              Tambah Layanan Baru
             </Button>
           </div>
         )}
