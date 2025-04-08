@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -33,7 +32,7 @@ import BottomNavigation from "@/components/BottomNavigation";
 import { serviceCategories } from "@/utils/serviceCategories";
 import { ServiceFormData } from "@/types/service";
 
-// Form validation schema
+// Form validation schema - update price type
 const serviceFormSchema = z.object({
   title: z.string()
     .min(5, "Judul layanan minimal 5 karakter")
@@ -47,11 +46,9 @@ const serviceFormSchema = z.object({
   subCategoryId: z.string({
     required_error: "Pilih sub-kategori layanan",
   }),
-  price: z.string()
-    .refine(val => !val || !isNaN(Number(val)), {
-      message: "Harga harus berupa angka",
-    })
-    .transform(val => (val ? Number(val) : undefined)),
+  price: z.coerce.number()
+    .min(0, "Harga tidak boleh negatif")
+    .optional(),
   location: z.string().optional(),
 });
 
@@ -79,7 +76,7 @@ const EditService = () => {
       description: service.description,
       categoryId: service.categoryId,
       subCategoryId: service.subCategoryId,
-      price: service.price?.toString() || "",
+      price: service.price,
       location: service.location || "",
     },
   });
