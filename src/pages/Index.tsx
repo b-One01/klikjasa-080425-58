@@ -6,13 +6,61 @@ import { Link } from "react-router-dom";
 import BottomNavigation from "@/components/BottomNavigation";
 import ServiceCard from "@/components/ServiceCard";
 import { Search } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import CategoryCarousel from "@/components/CategoryCarousel";
+import { ServiceRequest } from "@/types/service";
 
 const Index = () => {
   const { user, login } = useUser();
   const { categories, services } = useData();
   const [searchQuery, setSearchQuery] = useState("");
+  const [recommendedServices, setRecommendedServices] = useState(services);
+  const [serviceRequests, setServiceRequests] = useState<ServiceRequest[]>([]);
+  
+  // Generate mock service requests
+  useEffect(() => {
+    // This would normally come from the API, but we're mocking it
+    if (user?.role === 'provider') {
+      // Generate some mock service requests relevant to the provider
+      const mockRequests: ServiceRequest[] = [
+        {
+          id: 'req-1',
+          description: 'Saya membutuhkan jasa pembersihan rumah untuk rumah dengan 3 kamar tidur',
+          categoryId: 'c-1', // assumes cleaning category id
+          subCategoryId: 'sc-1',
+          userId: 'user-1',
+          location: 'Jakarta Selatan',
+          offerDeadline: '3 Jam',
+          createdAt: new Date().toISOString(),
+          status: 'open'
+        },
+        {
+          id: 'req-2',
+          description: 'Butuh tukang ledeng untuk perbaikan keran yang bocor',
+          categoryId: 'c-2',
+          subCategoryId: 'sc-5',
+          userId: 'user-2',
+          location: 'Jakarta Pusat',
+          offerDeadline: '6 Jam',
+          createdAt: new Date().toISOString(),
+          status: 'open'
+        }
+      ];
+      setServiceRequests(mockRequests);
+    }
+  }, [user?.role]);
+  
+  // Simulate recommended services based on user needs
+  useEffect(() => {
+    if (services.length > 0) {
+      if (user?.role === 'user') {
+        // This would be based on user's previous requests and searches in a real app
+        // For now, we're just randomly sorting the services
+        const sortedServices = [...services].sort(() => Math.random() - 0.5);
+        setRecommendedServices(sortedServices);
+      }
+    }
+  }, [services, user]);
   
   const handleGuestLogin = () => {
     // Sample user data for guest login
@@ -24,6 +72,7 @@ const Index = () => {
       role: 'user',
       balance: 50000,
       isLoggedIn: true,
+      address: 'Jakarta, Indonesia',
     };
     
     login(sampleUser);
@@ -88,9 +137,16 @@ const Index = () => {
       </div>
       
       {user.role === 'user' ? (
-        <UserDashboard categories={categories} services={services} />
+        <UserDashboard 
+          categories={categories} 
+          services={services}
+          recommendedServices={recommendedServices}
+        />
       ) : (
-        <ProviderDashboard services={services} />
+        <ProviderDashboard 
+          services={services} 
+          serviceRequests={serviceRequests}
+        />
       )}
       
       <BottomNavigation />
@@ -98,7 +154,7 @@ const Index = () => {
   );
 };
 
-const UserDashboard = ({ categories, services }) => {
+const UserDashboard = ({ categories, services, recommendedServices }) => {
   return (
     <div className="p-4">
       <div className="mb-6">
@@ -108,16 +164,24 @@ const UserDashboard = ({ categories, services }) => {
       
       <div className="mb-6">
         <div className="flex justify-between items-center mb-3">
-          <h2 className="text-lg font-semibold">Layanan Populer</h2>
+          <h2 className="text-lg font-semibold">Layanan yang Direkomendasikan</h2>
           <Link to="/search" className="text-sm text-primary">
             Lihat Semua
           </Link>
         </div>
         <div className="grid grid-cols-2 gap-4">
-          {services.slice(0, 4).map((service) => (
+          {recommendedServices.slice(0, 4).map((service) => (
             <ServiceCard key={service.id} service={service} />
           ))}
         </div>
+      </div>
+      
+      <div className="mb-6">
+        <Link to="/request-service" className="block bg-primary/10 p-4 rounded-lg text-center mb-4">
+          <h3 className="font-medium text-primary mb-1">Punya kebutuhan jasa spesifik?</h3>
+          <p className="text-sm text-gray-600 mb-2">Buat permintaan dan dapatkan penawaran dari penyedia jasa</p>
+          <Button className="bg-primary w-full">Buat Permintaan Jasa</Button>
+        </Link>
       </div>
       
       <div className="bg-gray-50 p-4 rounded-lg">
@@ -132,7 +196,7 @@ const UserDashboard = ({ categories, services }) => {
   );
 };
 
-const ProviderDashboard = ({ services }) => {
+const ProviderDashboard = ({ services, serviceRequests }) => {
   const { user } = useUser();
   const allServices = services || [];
   // Filter out provider's own services
@@ -157,10 +221,41 @@ const ProviderDashboard = ({ services }) => {
       </div>
       
       <div className="mb-6">
-        <h2 className="text-lg font-semibold mb-3">Pesanan Terbaru</h2>
-        <div className="bg-white p-4 rounded-lg border border-gray-100 text-center">
-          <p className="text-gray-500">Belum ada pesanan baru</p>
+        <div className="flex justify-between items-center mb-3">
+          <h2 className="text-lg font-semibold">Permintaan Jasa Terbaru</h2>
+          <Link to="/search" className="text-sm text-primary">
+            Lihat Semua
+          </Link>
         </div>
+        
+        {serviceRequests.length > 0 ? (
+          <div className="space-y-3">
+            {serviceRequests.map(request => (
+              <div key={request.id} className="bg-white p-4 rounded-lg border border-gray-100">
+                <div className="flex justify-between mb-2">
+                  <span className="text-xs bg-blue-100 text-blue-700 rounded-full px-2 py-0.5">
+                    {request.offerDeadline} tersisa
+                  </span>
+                  <span className="text-xs text-gray-500">
+                    {new Date(request.createdAt).toLocaleDateString('id-ID')}
+                  </span>
+                </div>
+                <p className="text-sm font-medium mb-1">{request.description}</p>
+                <div className="flex items-center text-xs text-gray-500 mb-3">
+                  <MapPin size={12} className="mr-1" />
+                  <span>{request.location}</span>
+                </div>
+                <Button className="w-full bg-primary text-white text-sm">
+                  Ajukan Penawaran
+                </Button>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="bg-white p-4 rounded-lg border border-gray-100 text-center">
+            <p className="text-gray-500">Belum ada permintaan jasa baru</p>
+          </div>
+        )}
       </div>
       
       <div className="mb-6">

@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeft, Upload, MapPin, Clock } from 'lucide-react';
+import { ArrowLeft, Upload, MapPin, Clock, X } from 'lucide-react';
 import { toast } from 'sonner';
 import BottomNavigation from '@/components/BottomNavigation';
 import { serviceCategories } from '@/utils/serviceCategories';
@@ -29,6 +29,7 @@ const RequestService = () => {
   const [images, setImages] = useState<File[]>([]);
   const [imagePreviewUrls, setImagePreviewUrls] = useState<string[]>([]);
   const [offerDeadline, setOfferDeadline] = useState('3 Jam');
+  const [showMap, setShowMap] = useState(false);
   
   // For AI suggestions
   const [aiSuggested, setAiSuggested] = useState(false);
@@ -47,6 +48,13 @@ const RequestService = () => {
       }
     }
   }, [description]);
+
+  // Show map after user enters location
+  useEffect(() => {
+    if (location.length > 5) {
+      setShowMap(true);
+    }
+  }, [location]);
   
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -192,6 +200,17 @@ const RequestService = () => {
               Penting untuk layanan yang membutuhkan kehadiran fisik
             </p>
           </div>
+          
+          {showMap && (
+            <div className="mt-2">
+              <div className="w-full h-[200px] bg-gray-200 rounded-md flex items-center justify-center text-gray-500">
+                <p>Map View (lokasi berdasarkan alamat yang diinput)</p>
+              </div>
+              <p className="text-xs text-gray-500 mt-1">
+                Geser pin untuk menyesuaikan lokasi yang tepat
+              </p>
+            </div>
+          )}
           
           <div>
             <label htmlFor="deadline" className="text-sm font-medium block mb-1">

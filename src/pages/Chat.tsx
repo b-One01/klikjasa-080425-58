@@ -19,6 +19,50 @@ const getMockUserInfo = (userId: string) => {
   return userMap[userId] || { name: 'Unknown User' };
 };
 
+// Function to filter out contact information
+const filterContactInfo = (message: string): { filteredMessage: string, containedContact: boolean } => {
+  // Phone numbers (Indonesian format)
+  const phonePattern = /(\+62|62|0)8[1-9][0-9]{6,10}/g;
+  
+  // WhatsApp mentions
+  const waPattern = /\b(whatsapp|wa|WA|Whatsapp|whtsapp|w\.a)\b/gi;
+  
+  // Email addresses
+  const emailPattern = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
+  
+  // Social media handles/usernames
+  const socialPattern = /\b(instagram|ig|telegram|facebook|fb|twitter|line|tiktok)\b/gi;
+  
+  // Check if the message contains contact info
+  const containsPhone = phonePattern.test(message);
+  const containsWA = waPattern.test(message);
+  const containsEmail = emailPattern.test(message);
+  const containsSocial = socialPattern.test(message);
+  
+  const containedContact = containsPhone || containsWA || containsEmail || containsSocial;
+  
+  // Replace contact info with censored text
+  let filteredMessage = message;
+  
+  if (containsPhone) {
+    filteredMessage = filteredMessage.replace(phonePattern, "*** nomor telepon disensor ***");
+  }
+  
+  if (containsWA) {
+    filteredMessage = filteredMessage.replace(waPattern, "*** platform chat disensor ***");
+  }
+  
+  if (containsEmail) {
+    filteredMessage = filteredMessage.replace(emailPattern, "*** email disensor ***");
+  }
+  
+  if (containsSocial) {
+    filteredMessage = filteredMessage.replace(socialPattern, "*** sosial media disensor ***");
+  }
+  
+  return { filteredMessage, containedContact };
+};
+
 // Mock messages
 const generateMockMessages = (currentUserId: string, otherUserId: string): ChatMessage[] => {
   return [
@@ -65,6 +109,7 @@ const Chat = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [otherUser, setOtherUser] = useState<{ name: string; image?: string }>({ name: '' });
+  const [hasContactInfo, setHasContactInfo] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
@@ -80,6 +125,16 @@ const Chat = () => {
     scrollToBottom();
   }, [messages]);
   
+  // Check for contact info as user types
+  useEffect(() => {
+    if (newMessage.trim()) {
+      const { containedContact } = filterContactInfo(newMessage);
+      setHasContactInfo(containedContact);
+    } else {
+      setHasContactInfo(false);
+    }
+  }, [newMessage]);
+  
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -87,17 +142,21 @@ const Chat = () => {
   const handleSendMessage = () => {
     if (!newMessage.trim() || !user || !otherUserId) return;
     
+    // Filter the message for contact information
+    const { filteredMessage } = filterContactInfo(newMessage);
+    
     const newMsg: ChatMessage = {
       id: `msg-${Date.now()}`,
       senderId: user.id,
       receiverId: otherUserId,
-      content: newMessage,
+      content: filteredMessage,
       timestamp: new Date().toISOString(),
       read: false
     };
     
     setMessages([...messages, newMsg]);
     setNewMessage('');
+    setHasContactInfo(false);
     
     // In a real app, this would send the message to the server
   };
@@ -192,7 +251,7 @@ const Chat = () => {
       <div className="flex-1 overflow-y-auto bg-gray-50 p-4 space-y-4">
         <div className="bg-yellow-50 p-3 rounded-lg border border-yellow-100 mb-4">
           <p className="text-sm text-yellow-700">
-            Informasi pribadi seperti nomor telepon, WhatsApp, dan informasi kontak lainnya akan disaringkan oleh sistem untuk memastikan keamanan. Gunakan fitur chat ini untuk komunikasi.
+            <strong>Hubungi penyedia layanan</strong> untuk memastikan harga dan gambaran layanan yang Anda butuhkan. Informasi pribadi seperti nomor telepon, WhatsApp, dan informasi kontak lainnya akan disaring oleh sistem untuk memastikan keamanan.
           </p>
         </div>
         
@@ -247,8 +306,8 @@ const Chat = () => {
               placeholder="Ketik pesan..."
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-              className="pr-10"
+              onKeyPress={(e) => e.key === 'Enter' && !hasContactInfo && handleSendMessage()}
+              className={`pr-10 ${hasContactInfo ? 'border-red-300 focus-visible:ring-red-300' : ''}`}
             />
             <Button
               variant="ghost"
@@ -261,19 +320,25 @@ const Chat = () => {
           </div>
           
           <Button
-            variant={newMessage.trim() ? "default" : "ghost"}
+            variant={newMessage.trim() && !hasContactInfo ? "default" : "ghost"}
             size="icon"
-            className={newMessage.trim() ? "bg-primary text-white" : "text-gray-400"}
+            className={newMessage.trim() && !hasContactInfo ? "bg-primary text-white" : "text-gray-400"}
             onClick={handleSendMessage}
-            disabled={!newMessage.trim()}
+            disabled={!newMessage.trim() || hasContactInfo}
           >
             <SendHorizonal size={20} />
           </Button>
         </div>
         
-        <div className="text-xs text-center mt-2 text-gray-400">
-          Pesan yang Anda kirim akan dimoderasi oleh sistem untuk mencegah pertukaran informasi kontak pribadi
-        </div>
+        {hasContactInfo ? (
+          <div className="text-xs text-center mt-2 text-red-500 font-medium">
+            Informasi kontak terdeteksi dan akan difilter. Jangan berbagi kontak pribadi.
+          </div>
+        ) : (
+          <div className="text-xs text-center mt-2 text-gray-400">
+            Pesan yang Anda kirim akan dimoderasi oleh sistem untuk mencegah pertukaran informasi kontak pribadi
+          </div>
+        )}
       </div>
     </div>
   );

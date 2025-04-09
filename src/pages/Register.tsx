@@ -4,6 +4,7 @@ import { useUser, UserProfile } from '@/contexts/UserContext';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
@@ -15,12 +16,14 @@ const Register = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
+  const [address, setAddress] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [businessName, setBusinessName] = useState('');
   const [businessDescription, setBusinessDescription] = useState('');
   const [isBusinessAccount, setIsBusinessAccount] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [showMap, setShowMap] = useState(false);
 
   const { login } = useUser();
   const navigate = useNavigate();
@@ -35,6 +38,16 @@ const Register = () => {
       setStep(step - 1);
     } else {
       navigate('/');
+    }
+  };
+
+  // Show map after user enters address
+  const handleAddressChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setAddress(e.target.value);
+    if (e.target.value.length > 5) {
+      setShowMap(true);
+    } else {
+      setShowMap(false);
     }
   };
 
@@ -56,6 +69,7 @@ const Register = () => {
         name,
         email,
         phone,
+        address,
         role,
         balance: 0,
         isLoggedIn: true,
@@ -164,6 +178,30 @@ const Register = () => {
               required
             />
           </div>
+
+          <div className="space-y-2">
+            <label htmlFor="address" className="text-sm font-medium">
+              Alamat Lengkap
+            </label>
+            <Textarea
+              id="address"
+              placeholder="Alamat lengkap anda"
+              value={address}
+              onChange={handleAddressChange}
+              required
+            />
+          </div>
+
+          {showMap && (
+            <div className="mt-2">
+              <div className="w-full h-[150px] bg-gray-200 rounded-md flex items-center justify-center text-gray-500">
+                <p>Map View (berdasarkan alamat yang diinput)</p>
+              </div>
+              <p className="text-xs text-gray-500 mt-1">
+                Geser pin untuk menyesuaikan lokasi alamat Anda
+              </p>
+            </div>
+          )}
 
           <div className="space-y-2">
             <label htmlFor="password" className="text-sm font-medium">

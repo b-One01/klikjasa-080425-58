@@ -35,6 +35,17 @@ export interface ServiceRequest {
   status?: 'open' | 'in_progress' | 'completed' | 'cancelled';
 }
 
+export interface ServiceOffer {
+  id: string;
+  requestId: string;
+  providerId: string;
+  price: number;
+  description: string;
+  estimatedTime?: string;
+  createdAt: string;
+  status: 'pending' | 'accepted' | 'rejected';
+}
+
 export interface ChatMessage {
   id: string;
   senderId: string;
