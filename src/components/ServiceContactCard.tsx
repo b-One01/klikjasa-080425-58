@@ -92,13 +92,13 @@ const ServiceContactCard = ({ service }: ServiceContactCardProps) => {
           
           {user.balance < contactFee && (
             <p className="text-sm text-red-500">
-              Saldo anda tidak mencukupi. Silakan top-up untuk melihat kontak penyedia jasa.
+              Saldo anda tidak mencukupi. Silakan top-up untuk melihat detail penyedia jasa.
             </p>
           )}
           
           {!user.isLoggedIn && (
             <p className="text-sm text-red-500">
-              Silakan login terlebih dahulu untuk melihat kontak penyedia jasa.
+              Silakan login terlebih dahulu untuk melihat detail penyedia jasa.
             </p>
           )}
         </div>

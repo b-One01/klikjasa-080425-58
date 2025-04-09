@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useUser } from '@/contexts/UserContext';
@@ -19,13 +18,18 @@ const getMockUserInfo = (userId: string) => {
   return userMap[userId] || { name: 'Unknown User' };
 };
 
-// Function to filter out contact information
+// Function to filter out contact information with enhanced detection
 const filterContactInfo = (message: string): { filteredMessage: string, containedContact: boolean } => {
-  // Phone numbers (Indonesian format)
-  const phonePattern = /(\+62|62|0)8[1-9][0-9]{6,10}/g;
+  // Enhanced phone number patterns (Indonesian format) to catch various formats
+  const phonePatterns = [
+    /(\+62|62|0)8[1-9][0-9]{6,10}/g,  // Standard format
+    /(\+62|62|0)\s*8[1-9][\s\d]{6,14}/g,  // With spaces between digits
+    /(\+62|62|0)[\s-]*8[1-9][\s-\d]{6,20}/g,  // With spaces or dashes
+    /(\+62|62|0)[.\s-]*8[1-9][.\s-\d]{6,20}/g  // With dots, spaces, or dashes
+  ];
   
   // WhatsApp mentions
-  const waPattern = /\b(whatsapp|wa|WA|Whatsapp|whtsapp|w\.a)\b/gi;
+  const waPattern = /\b(whatsapp|wa|WA|Whatsapp|whtsapp|w\.a|w\sa)\b/gi;
   
   // Email addresses
   const emailPattern = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
@@ -34,7 +38,14 @@ const filterContactInfo = (message: string): { filteredMessage: string, containe
   const socialPattern = /\b(instagram|ig|telegram|facebook|fb|twitter|line|tiktok)\b/gi;
   
   // Check if the message contains contact info
-  const containsPhone = phonePattern.test(message);
+  let containsPhone = false;
+  for (const pattern of phonePatterns) {
+    if (pattern.test(message)) {
+      containsPhone = true;
+      break;
+    }
+  }
+  
   const containsWA = waPattern.test(message);
   const containsEmail = emailPattern.test(message);
   const containsSocial = socialPattern.test(message);
@@ -45,7 +56,9 @@ const filterContactInfo = (message: string): { filteredMessage: string, containe
   let filteredMessage = message;
   
   if (containsPhone) {
-    filteredMessage = filteredMessage.replace(phonePattern, "*** nomor telepon disensor ***");
+    for (const pattern of phonePatterns) {
+      filteredMessage = filteredMessage.replace(pattern, "*** nomor telepon disensor ***");
+    }
   }
   
   if (containsWA) {
@@ -332,7 +345,7 @@ const Chat = () => {
         
         {hasContactInfo ? (
           <div className="text-xs text-center mt-2 text-red-500 font-medium">
-            Informasi kontak terdeteksi dan akan difilter. Jangan berbagi kontak pribadi.
+            Informasi kontak terdeteksi dan akan difilter. Jangan berbagi kontak pribadi sebelum deal demi menjaga privasi anda pada oknum tak bertanggungjawab.
           </div>
         ) : (
           <div className="text-xs text-center mt-2 text-gray-400">

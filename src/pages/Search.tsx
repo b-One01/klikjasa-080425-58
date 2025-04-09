@@ -84,7 +84,7 @@ const Search = () => {
       </div>
 
       {isFilterVisible && (
-        <div className="p-4 border-b border-gray-100">
+        <div className="p-4 border-b border-gray-100 dropdown-container">
           <h2 className="text-sm font-medium mb-2">Filter Kategori</h2>
           <div className="flex flex-wrap gap-2">
             {categories.map((category) => (
