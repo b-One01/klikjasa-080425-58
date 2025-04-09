@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { useUser, UserProfile } from "@/contexts/UserContext";
 import { useData } from "@/contexts/DataContext";
@@ -9,6 +8,7 @@ import { Search } from "lucide-react";
 import { useState, useEffect } from "react";
 import CategoryCarousel from "@/components/CategoryCarousel";
 import { ServiceRequest } from "@/types/service";
+import { MapPin } from 'lucide-react';
 
 const Index = () => {
   const { user, login } = useUser();
@@ -17,16 +17,13 @@ const Index = () => {
   const [recommendedServices, setRecommendedServices] = useState(services);
   const [serviceRequests, setServiceRequests] = useState<ServiceRequest[]>([]);
   
-  // Generate mock service requests
   useEffect(() => {
-    // This would normally come from the API, but we're mocking it
     if (user?.role === 'provider') {
-      // Generate some mock service requests relevant to the provider
       const mockRequests: ServiceRequest[] = [
         {
           id: 'req-1',
           description: 'Saya membutuhkan jasa pembersihan rumah untuk rumah dengan 3 kamar tidur',
-          categoryId: 'c-1', // assumes cleaning category id
+          categoryId: 'c-1',
           subCategoryId: 'sc-1',
           userId: 'user-1',
           location: 'Jakarta Selatan',
@@ -50,12 +47,9 @@ const Index = () => {
     }
   }, [user?.role]);
   
-  // Simulate recommended services based on user needs
   useEffect(() => {
     if (services.length > 0) {
       if (user?.role === 'user') {
-        // This would be based on user's previous requests and searches in a real app
-        // For now, we're just randomly sorting the services
         const sortedServices = [...services].sort(() => Math.random() - 0.5);
         setRecommendedServices(sortedServices);
       }
@@ -63,7 +57,6 @@ const Index = () => {
   }, [services, user]);
   
   const handleGuestLogin = () => {
-    // Sample user data for guest login
     const sampleUser: UserProfile = {
       id: 'user-1',
       name: 'Tamu',
@@ -78,7 +71,6 @@ const Index = () => {
     login(sampleUser);
   };
   
-  // If user is not logged in, show welcome screen
   if (!user?.isLoggedIn) {
     return (
       <div className="app-container p-4">
@@ -107,7 +99,6 @@ const Index = () => {
     );
   }
   
-  // User is logged in, show appropriate dashboard based on role
   return (
     <div className="app-container pb-16">
       <div className="p-4 bg-primary text-white sticky top-0 z-10">
@@ -199,7 +190,6 @@ const UserDashboard = ({ categories, services, recommendedServices }) => {
 const ProviderDashboard = ({ services, serviceRequests }) => {
   const { user } = useUser();
   const allServices = services || [];
-  // Filter out provider's own services
   const otherServices = allServices.filter(service => service.provider.id !== 'provider-1');
   
   return (
