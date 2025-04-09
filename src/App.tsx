@@ -27,6 +27,8 @@ import Cart from "./pages/Cart";
 import ChatList from "./pages/ChatList";
 import Chat from "./pages/Chat";
 import RequestService from "./pages/RequestService";
+import RequestList from "./pages/RequestList";
+import RequestOffers from "./pages/RequestOffers";
 
 const queryClient = new QueryClient();
 
@@ -57,6 +59,8 @@ const App = () => (
                 <Route path="/chats" element={<ChatList />} />
                 <Route path="/chat/:id" element={<Chat />} />
                 <Route path="/request-service" element={<RequestService />} />
+                <Route path="/request-list" element={<RequestList />} />
+                <Route path="/request-offers/:id" element={<RequestOffers />} />
                 <Route path="/category/:id" element={<Search />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>

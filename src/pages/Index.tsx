@@ -1,15 +1,13 @@
-
 import { Button } from "@/components/ui/button";
 import { useUser, UserProfile } from "@/contexts/UserContext";
 import { useData } from "@/contexts/DataContext";
 import { Link } from "react-router-dom";
 import BottomNavigation from "@/components/BottomNavigation";
 import ServiceCard from "@/components/ServiceCard";
-import { Search } from "lucide-react";
+import { Search, MapPin } from "lucide-react";
 import { useState, useEffect } from "react";
 import CategoryCarousel from "@/components/CategoryCarousel";
 import { ServiceRequest } from "@/types/service";
-import { MapPin } from 'lucide-react';
 
 const Index = () => {
   const { user, login } = useUser();
@@ -150,12 +148,9 @@ const UserDashboard = ({ categories, services, recommendedServices }) => {
   const { user } = useUser();
   const [userRequests, setUserRequests] = useState<ServiceRequest[]>([]);
 
-  // Fetch user's service requests
   useEffect(() => {
     if (!user) return;
 
-    // This would come from an API in a real app
-    // For now we're using mock data
     const mockUserRequests: ServiceRequest[] = [
       {
         id: 'req-user-1',
@@ -191,25 +186,11 @@ const UserDashboard = ({ categories, services, recommendedServices }) => {
         <CategoryCarousel categories={categories} />
       </div>
       
-      <div className="mb-6">
-        <div className="flex justify-between items-center mb-3">
-          <h2 className="text-lg font-semibold">Layanan yang Direkomendasikan</h2>
-          <Link to="/search" className="text-sm text-primary">
-            Lihat Semua
-          </Link>
-        </div>
-        <div className="grid grid-cols-2 gap-4">
-          {recommendedServices.slice(0, 4).map((service) => (
-            <ServiceCard key={service.id} service={service} />
-          ))}
-        </div>
-      </div>
-      
       {userRequests.length > 0 && (
         <div className="mb-6">
           <div className="flex justify-between items-center mb-3">
             <h2 className="text-lg font-semibold">Permintaan Layanan Saya</h2>
-            <Link to="/request-service" className="text-sm text-primary">
+            <Link to="/request-list" className="text-sm text-primary">
               Lihat Semua
             </Link>
           </div>
@@ -233,15 +214,31 @@ const UserDashboard = ({ categories, services, recommendedServices }) => {
                   <span className="text-xs bg-green-100 text-green-700 rounded-full px-2 py-0.5">
                     {request.status === 'open' ? 'Menunggu Penawaran' : 'Tertutup'}
                   </span>
-                  <Button size="sm" variant="outline" className="text-xs h-8">
-                    Lihat Penawaran
-                  </Button>
+                  <Link to={`/request-offers/${request.id}`}>
+                    <Button size="sm" variant="outline" className="text-xs h-8">
+                      Lihat Penawaran
+                    </Button>
+                  </Link>
                 </div>
               </div>
             ))}
           </div>
         </div>
       )}
+      
+      <div className="mb-6">
+        <div className="flex justify-between items-center mb-3">
+          <h2 className="text-lg font-semibold">Layanan yang Direkomendasikan</h2>
+          <Link to="/search" className="text-sm text-primary">
+            Lihat Semua
+          </Link>
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          {recommendedServices.slice(0, 4).map((service) => (
+            <ServiceCard key={service.id} service={service} />
+          ))}
+        </div>
+      </div>
       
       <div className="mb-6">
         <Link to="/request-service" className="block bg-primary/10 p-4 rounded-lg text-center mb-4">
