@@ -61,10 +61,6 @@ const ServiceDetail = () => {
   };
 
   const handleConfirmOrder = () => {
-    // In a real app, deduct fees from both sides
-    // For provider: 5% of the service price
-    // For user: 3% of the service price
-    
     // Show provider's contact info
     setProviderContactInfo(service.provider.phone);
     
@@ -83,6 +79,10 @@ const ServiceDetail = () => {
       toast.success('Beralih ke akun Pengguna Jasa');
       navigate('/');
     }
+  };
+
+  const handleGoToChat = () => {
+    navigate(`/chat/${service.provider.id}`);
   };
 
   return (
@@ -266,36 +266,44 @@ const ServiceDetail = () => {
                       Anda dapat menghubungi penyedia jasa melalui:
                     </p>
                     <div className="bg-white p-3 rounded border border-green-100">
-                      <p className="font-medium">WhatsApp: {providerContactInfo}</p>
+                      <p className="font-medium">No. Telepon: {providerContactInfo}</p>
                     </div>
                   </div>
                 ) : (
-                  <div className="flex space-x-3 mb-6">
+                  <>
+                    {/* Chat with provider button - prioritized */}
+                    <div className="bg-yellow-50 p-3 rounded-lg border border-yellow-100 mb-4">
+                      <p className="text-sm text-yellow-700">
+                        Hubungi penyedia layanan terlebih dahulu untuk memastikan harga dan gambaran layanan yang Anda butuhkan
+                      </p>
+                    </div>
+                    
                     <Button
-                      onClick={() => setShowOrderForm(true)}
-                      className="flex-1 bg-primary"
+                      className="w-full flex items-center justify-center mb-4 bg-green-500 hover:bg-green-600"
+                      onClick={handleGoToChat}
                     >
-                      Pesan Layanan
+                      <MessageSquare size={18} className="mr-2" />
+                      <span>Chat dengan Penyedia</span>
                     </Button>
-                    <Button
-                      variant="outline"
-                      onClick={handleAddToCart}
-                      className="flex-1"
-                    >
-                      <ShoppingCart size={18} className="mr-2" />
-                      Tambah ke Keranjang
-                    </Button>
-                  </div>
+                    
+                    <div className="flex space-x-3 mb-6">
+                      <Button
+                        onClick={() => setShowOrderForm(true)}
+                        className="flex-1 bg-primary"
+                      >
+                        Pesan Layanan
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={handleAddToCart}
+                        className="flex-1"
+                      >
+                        <ShoppingCart size={18} className="mr-2" />
+                        Tambah ke Keranjang
+                      </Button>
+                    </div>
+                  </>
                 )}
-                
-                <Button
-                  variant="ghost"
-                  className="w-full flex items-center justify-center mb-6"
-                  onClick={() => window.location.href = `https://wa.me/${service.provider.phone.replace(/\+/g, '')}`}
-                >
-                  <MessageSquare size={18} className="mr-2 text-green-500" />
-                  <span>Chat dengan Penyedia</span>
-                </Button>
               </>
             )}
           </>

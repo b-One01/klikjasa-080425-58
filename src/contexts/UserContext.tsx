@@ -14,6 +14,7 @@ export interface UserProfile {
   businessName?: string;
   businessDescription?: string;
   isBusinessAccount?: boolean;
+  address?: string; // Added address field
 }
 
 interface UserContextType {

@@ -1,69 +1,74 @@
 
-import { House, User, Search, MessageSquare, MenuSquare } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
-import { useUser } from "@/contexts/UserContext";
-
-interface NavItem {
-  label: string;
-  path: string;
-  icon: React.ReactNode;
-  roleSpecific?: 'user' | 'provider';
-}
+import { useLocation, Link } from 'react-router-dom';
+import { Home, Search, PlusCircle, MessageCircle, User } from 'lucide-react';
+import { useUser } from '@/contexts/UserContext';
 
 const BottomNavigation = () => {
-  const location = useLocation();
   const { user } = useUser();
+  const location = useLocation();
   
-  const isActive = (path: string) => location.pathname === path;
-
-  const navItems: NavItem[] = [
+  // Define navigation items based on user role
+  const navItems = [
     {
-      label: 'Beranda',
       path: '/',
-      icon: <House size={20} />,
+      label: 'Beranda',
+      icon: <Home size={20} />,
+      showFor: ['user', 'provider', null],
     },
     {
-      label: 'Cari',
       path: '/search',
+      label: 'Cari',
       icon: <Search size={20} />,
+      showFor: ['user', 'provider', null],
     },
     {
-      label: 'Pesanan',
-      path: '/orders',
-      icon: <MessageSquare size={20} />,
-      roleSpecific: 'provider',
+      path: user?.role === 'provider' ? '/add-service' : '/request-service',
+      label: user?.role === 'provider' ? 'Buat Layanan' : 'Request',
+      icon: <PlusCircle size={24} />,
+      showFor: ['user', 'provider'],
     },
     {
-      label: 'Layanan',
-      path: '/my-services',
-      icon: <MenuSquare size={20} />,
-      roleSpecific: 'provider',
+      path: '/chats',
+      label: 'Chat',
+      icon: <MessageCircle size={20} />,
+      showFor: ['user', 'provider'],
     },
     {
-      label: 'Profil',
       path: '/profile',
+      label: 'Profil',
       icon: <User size={20} />,
+      showFor: ['user', 'provider', null],
     },
   ];
-
-  // Filter items based on user role
-  const filteredNavItems = navItems.filter(item => {
-    if (!item.roleSpecific) return true;
-    return user?.role === item.roleSpecific;
-  });
-
+  
+  const filteredNavItems = navItems.filter(item => 
+    item.showFor.includes(user?.role || null)
+  );
+  
   return (
-    <nav className="bottom-nav">
-      {filteredNavItems.map((item) => (
-        <Link
-          key={item.path}
-          to={item.path}
-          className={`nav-item ${isActive(item.path) ? 'active' : ''}`}
-        >
-          <div className="mb-1">{item.icon}</div>
-          <span>{item.label}</span>
-        </Link>
-      ))}
+    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-10 shadow-md">
+      <div className="flex justify-around items-center h-16">
+        {filteredNavItems.map((item) => {
+          const isActive = location.pathname === item.path;
+          
+          return (
+            <Link
+              key={item.path}
+              to={item.path}
+              className={`flex flex-col items-center justify-center flex-1 h-full ${
+                isActive ? 'text-primary' : 'text-gray-500'
+              }`}
+            >
+              <div className={`${item.path.includes('add-service') || item.path.includes('request-service') ? '-mt-6' : ''}`}>
+                {item.icon}
+              </div>
+              <span className={`text-xs mt-1 ${item.path.includes('add-service') || item.path.includes('request-service') ? 'hidden' : ''}`}>
+                {item.label}
+              </span>
+            </Link>
+          );
+        })}
+      </div>
     </nav>
   );
 };

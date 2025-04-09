@@ -23,6 +23,10 @@ import AddService from "./pages/AddService";
 import EditService from "./pages/EditService";
 import Orders from "./pages/Orders";
 import NotFound from "./pages/NotFound";
+import Cart from "./pages/Cart";
+import ChatList from "./pages/ChatList";
+import Chat from "./pages/Chat";
+import RequestService from "./pages/RequestService";
 
 const queryClient = new QueryClient();
 
@@ -49,6 +53,11 @@ const App = () => (
                 <Route path="/add-service" element={<AddService />} />
                 <Route path="/edit-service/:id" element={<EditService />} />
                 <Route path="/orders" element={<Orders />} />
+                <Route path="/cart" element={<Cart />} />
+                <Route path="/chats" element={<ChatList />} />
+                <Route path="/chat/:id" element={<Chat />} />
+                <Route path="/request-service" element={<RequestService />} />
+                <Route path="/category/:id" element={<Search />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </DataProvider>
