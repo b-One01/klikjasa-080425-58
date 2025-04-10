@@ -6,7 +6,6 @@ import { Input } from '@/components/ui/input';
 import { ArrowLeft, SendHorizonal, Image, Paperclip, X } from 'lucide-react';
 import { ChatMessage } from '@/types/service';
 
-// Mock function to get user info
 const getMockUserInfo = (userId: string) => {
   const userMap: Record<string, { name: string; image?: string }> = {
     'provider-1': { name: 'Budi Santoso', image: '/placeholder.svg' },
@@ -18,26 +17,20 @@ const getMockUserInfo = (userId: string) => {
   return userMap[userId] || { name: 'Unknown User' };
 };
 
-// Function to filter out contact information with enhanced detection
 const filterContactInfo = (message: string): { filteredMessage: string, containedContact: boolean } => {
-  // Enhanced phone number patterns (Indonesian format) to catch various formats
   const phonePatterns = [
-    /(\+62|62|0)8[1-9][0-9]{6,10}/g,  // Standard format
-    /(\+62|62|0)\s*8[1-9][\s\d]{6,14}/g,  // With spaces between digits
-    /(\+62|62|0)[\s-]*8[1-9][\s-\d]{6,20}/g,  // With spaces or dashes
-    /(\+62|62|0)[.\s-]*8[1-9][.\s-\d]{6,20}/g  // With dots, spaces, or dashes
+    /(\+62|62|0)8[1-9][0-9]{6,10}/g,  
+    /(\+62|62|0)\s*8[1-9][\s\d]{6,14}/g,  
+    /(\+62|62|0)[\s-]*8[1-9][\s-\d]{6,20}/g,  
+    /(\+62|62|0)[.\s-]*8[1-9][.\s-\d]{6,20}/g
   ];
   
-  // WhatsApp mentions
   const waPattern = /\b(whatsapp|wa|WA|Whatsapp|whtsapp|w\.a|w\sa)\b/gi;
   
-  // Email addresses
   const emailPattern = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
   
-  // Social media handles/usernames
   const socialPattern = /\b(instagram|ig|telegram|facebook|fb|twitter|line|tiktok)\b/gi;
   
-  // Check if the message contains contact info
   let containsPhone = false;
   for (const pattern of phonePatterns) {
     if (pattern.test(message)) {
@@ -52,7 +45,6 @@ const filterContactInfo = (message: string): { filteredMessage: string, containe
   
   const containedContact = containsPhone || containsWA || containsEmail || containsSocial;
   
-  // Replace contact info with censored text
   let filteredMessage = message;
   
   if (containsPhone) {
@@ -76,7 +68,6 @@ const filterContactInfo = (message: string): { filteredMessage: string, containe
   return { filteredMessage, containedContact };
 };
 
-// Mock messages
 const generateMockMessages = (currentUserId: string, otherUserId: string): ChatMessage[] => {
   return [
     {
@@ -123,12 +114,12 @@ const Chat = () => {
   const [newMessage, setNewMessage] = useState('');
   const [otherUser, setOtherUser] = useState<{ name: string; image?: string }>({ name: '' });
   const [hasContactInfo, setHasContactInfo] = useState(false);
+  const [offerStatus, setOfferStatus] = useState<'pending' | 'accepted' | 'rejected'>('pending');
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
     if (user && otherUserId) {
-      // In a real app, this would fetch messages from the database
       setMessages(generateMockMessages(user.id, otherUserId));
       setOtherUser(getMockUserInfo(otherUserId));
     }
@@ -138,7 +129,6 @@ const Chat = () => {
     scrollToBottom();
   }, [messages]);
   
-  // Check for contact info as user types
   useEffect(() => {
     if (newMessage.trim()) {
       const { containedContact } = filterContactInfo(newMessage);
@@ -155,7 +145,6 @@ const Chat = () => {
   const handleSendMessage = () => {
     if (!newMessage.trim() || !user || !otherUserId) return;
     
-    // Filter the message for contact information
     const { filteredMessage } = filterContactInfo(newMessage);
     
     const newMsg: ChatMessage = {
@@ -170,8 +159,6 @@ const Chat = () => {
     setMessages([...messages, newMsg]);
     setNewMessage('');
     setHasContactInfo(false);
-    
-    // In a real app, this would send the message to the server
   };
   
   const formatTime = (timestamp: string) => {
@@ -194,7 +181,6 @@ const Chat = () => {
     }
   };
   
-  // Group messages by date
   const groupMessagesByDate = () => {
     const groups: { date: string; messages: ChatMessage[] }[] = [];
     let currentDate = '';
@@ -221,6 +207,20 @@ const Chat = () => {
     return groups;
   };
   
+  const handleBack = () => {
+    navigate(-1);
+  };
+  
+  const handleAcceptOffer = () => {
+    setOfferStatus('accepted');
+    toast.success('Anda telah menerima penawaran');
+  };
+  
+  const handleRejectOffer = () => {
+    setOfferStatus('rejected');
+    toast.error('Anda telah menolak penawaran');
+  };
+  
   if (!user) {
     navigate('/login');
     return null;
@@ -234,7 +234,7 @@ const Chat = () => {
             variant="ghost"
             size="icon"
             className="mr-2"
-            onClick={() => navigate('/chats')}
+            onClick={handleBack}
           >
             <ArrowLeft size={20} />
           </Button>
@@ -302,6 +302,26 @@ const Chat = () => {
         
         <div ref={messagesEndRef} />
       </div>
+      
+      {offerStatus === 'pending' && (
+        <div className="bg-gray-50 px-4 py-3 border-t border-gray-200">
+          <div className="flex space-x-2">
+            <Button 
+              variant="outline" 
+              className="flex-1 border-red-300 text-red-500 hover:bg-red-50"
+              onClick={handleRejectOffer}
+            >
+              Tolak Penawaran
+            </Button>
+            <Button 
+              className="flex-1 bg-green-500 hover:bg-green-600"
+              onClick={handleAcceptOffer}
+            >
+              Konfirmasi Penawaran
+            </Button>
+          </div>
+        </div>
+      )}
       
       <div className="bg-white border-t border-gray-200 p-3">
         <div className="flex items-center space-x-2">

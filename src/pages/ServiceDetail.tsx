@@ -1,4 +1,3 @@
-
 import { useParams, useNavigate } from 'react-router-dom';
 import { useData } from '@/contexts/DataContext';
 import { Button } from '@/components/ui/button';
@@ -9,7 +8,6 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
-import { supabase } from '@/integrations/supabase/client';
 
 const ServiceDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -61,13 +59,10 @@ const ServiceDetail = () => {
   };
 
   const handleConfirmOrder = () => {
-    // Show provider's contact info
     setProviderContactInfo(service.provider.phone);
     
-    // Show success message
     toast.success('Terima kasih telah memesan layanan di KlikJasa');
     
-    // Reset state
     setShowConfirmation(false);
     setOrderNotes('');
     setOrderDate('');
@@ -75,7 +70,6 @@ const ServiceDetail = () => {
 
   const handleSwitchToUser = () => {
     if (user) {
-      // In a real implementation, this would update the user role in the database
       toast.success('Beralih ke akun Pengguna Jasa');
       navigate('/');
     }
@@ -83,6 +77,28 @@ const ServiceDetail = () => {
 
   const handleGoToChat = () => {
     navigate(`/chat/${service.provider.id}`);
+  };
+
+  const formatPhoneForWhatsApp = (phone: string) => {
+    const digits = phone.replace(/\D/g, '');
+    
+    if (digits.startsWith('0')) {
+      return `62${digits.substring(1)}`;
+    } else if (digits.startsWith('62')) {
+      return digits;
+    } else if (digits.startsWith('8')) {
+      return `62${digits}`;
+    }
+    
+    return digits;
+  };
+
+  const handleWhatsAppClick = () => {
+    if (providerContactInfo) {
+      const formattedPhone = formatPhoneForWhatsApp(providerContactInfo);
+      const whatsappUrl = `https://wa.me/${formattedPhone}`;
+      window.open(whatsappUrl, '_blank');
+    }
   };
 
   return (
@@ -266,12 +282,22 @@ const ServiceDetail = () => {
                       Anda dapat menghubungi penyedia jasa melalui:
                     </p>
                     <div className="bg-white p-3 rounded border border-green-100">
-                      <p className="font-medium">No. Telepon: {providerContactInfo}</p>
+                      <p className="font-medium mb-3">No. Telepon: {providerContactInfo}</p>
+                      <Button 
+                        onClick={handleWhatsAppClick}
+                        className="w-full bg-green-500 hover:bg-green-600"
+                      >
+                        <img 
+                          src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" 
+                          alt="WhatsApp" 
+                          className="w-5 h-5 mr-2"
+                        />
+                        Hubungi via WhatsApp
+                      </Button>
                     </div>
                   </div>
                 ) : (
                   <>
-                    {/* Chat with provider button - prioritized */}
                     <div className="bg-yellow-50 p-3 rounded-lg border border-yellow-100 mb-4">
                       <p className="text-sm text-yellow-700">
                         Hubungi penyedia layanan terlebih dahulu untuk memastikan harga dan gambaran layanan yang Anda butuhkan

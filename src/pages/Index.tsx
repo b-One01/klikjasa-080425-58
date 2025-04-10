@@ -61,7 +61,7 @@ const Index = () => {
       name: 'Tamu',
       email: 'tamu@example.com',
       phone: '+628123456789',
-      role: 'user',
+      role: 'user' as const, // TypeScript fix: explicitly type as 'user' literal
       balance: 50000,
       isLoggedIn: true,
       address: 'Jakarta, Indonesia',

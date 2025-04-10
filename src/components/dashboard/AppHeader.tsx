@@ -11,7 +11,9 @@ const AppHeader = ({ user }: AppHeaderProps) => {
   return (
     <div className="p-4 bg-primary text-white sticky top-0 z-10">
       <div className="flex items-center justify-between mb-3">
-        <h1 className="text-xl font-bold">KlikJasa</h1>
+        <Link to="/">
+          <h1 className="text-xl font-bold">KlikJasa</h1>
+        </Link>
         <div className="flex items-center space-x-2">
           {user.role === 'user' ? (
             <Link to="/profile" className="text-sm">
